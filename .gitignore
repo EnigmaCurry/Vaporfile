@@ -1,0 +1,4 @@
+*.pyc
+*~
+/build/*
+/Vaporfile.egg-info/*
