@@ -98,7 +98,8 @@ Usage
 You can see the rest of the usage by running `vaporfile -h`, but here
 it is:
 
-    usage: vaporfile [-h] [-v] [-vv] {credentials,create,list,upload} ...
+    usage: vaporfile [-h] [--version] [-c PATH] [-v] [-vv]
+                     {credentials,create,list,upload} ...
     
     positional arguments:
       {credentials,create,list,upload}
@@ -109,6 +110,8 @@ it is:
     
     optional arguments:
       -h, --help            show this help message and exit
+      --version
+      -c PATH, --config PATH
+                            Use alternative config file (defaults to ~/.vaporfie)
       -v, --verbose         Be verbose
       -vv, --veryverbose    Be extra verbose
-    
