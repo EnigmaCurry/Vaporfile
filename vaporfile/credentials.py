@@ -7,6 +7,9 @@ import getpass
 import config
 from prompt_util import clear_screen, get_input
 
+class VaporfileCredentialException(Exception):
+    pass
+
 def prompt_save_credentials(args):
     clear_screen()
     print(" WARNING WARNING WARNING ".center(80,"+"))
@@ -28,13 +31,26 @@ def prompt_save_credentials(args):
     print("File access restricted to your user account ({0}).".format(getpass.getuser()))
     print("")
 
+def check_credentials(user_config=None):
+    if not user_config:
+        user_config = config.get_config()
+    try:
+        user_config["credentials"]["access_key"]
+        user_config["credentials"]["secret_key"]
+    except KeyError:
+        raise VaporfileCredentialException(
+            "Missing Amazon credentials in config")
+    return True
+    
 def store_credentials(credentials):
     """Store Amazon AWS credentials in user's home directory"""
-    try:
-        c = config.load_config()
-    except IOError:
-        #No existing config, create a new one.
-        c = {}
+    c = config.get_config()
     c["credentials"] = credentials
+    config.save_config(c)
+
+def remove_credentials(credentials):
+    """Store Amazon AWS credentials in user's home directory"""
+    c = config.get_config()
+    del c["credentials"]
     config.save_config(c)
     

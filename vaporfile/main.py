@@ -32,7 +32,11 @@ def main():
     p_cred_store = p_cred_subparsers.add_parser(
         "store", help="Store credentials locally")
     p_cred_store.set_defaults(func=credentials.prompt_save_credentials)
-
+    p_cred_remove = p_cred_subparsers.add_parser(
+        "remove", help="Remove the credentials stored locally")
+    p_cred_remove.set_defaults(func=credentials.remove_credentials)
+    
+    
     ### Create site
     p_create = subparsers.add_parser(
         "create", help="Create a new S3 website",

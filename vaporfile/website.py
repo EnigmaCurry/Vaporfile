@@ -22,6 +22,7 @@ def prompt_create_website(args):
     sync_path = None
     directory_index = None
     error_index = None
+    use_existing_bucket = False
     
     clear_screen()
     print(" Amazon S3 Website Creation Wizard ".center(80,"+"))
@@ -30,9 +31,10 @@ def prompt_create_website(args):
     print("You may press Ctrl-C at any point to quit without saving.")
     print("".center(80,"+"))
     print("")
+    user_config = config.get_config()
     try:
-        user_config = config.load_config()
-    except IOError:
+        user_config["credentials"]
+    except KeyError:
         print("No existing account information found.")
         if get_yes_no("Would you like to setup your Amazon AWS account? [Y/n] : ",default=True):
             credentials.prompt_save_credentials({})
@@ -57,7 +59,15 @@ def prompt_create_website(args):
             print("")
             #The bucket already exists.. by the user?
             if bucket_name in s3_util.get_bucket_names(conn):
-                print("Sorry, it looks like you've already configured a website with that domain.")
+                print("It looks like you've already configured an S3 bucket "
+                      "with that name.\n")
+                print("WARNING: If you proceed, existing files in this "
+                      "bucket may be lost!")
+                if get_yes_no("Are you sure you want to use {0}? [y/n]"\
+                                  .format(bucket_name)):
+                    use_existing_bucket = True
+                    break
+                print("")
             else:
                 print("Sorry, it looks like someone else owns that bucket name. Contact Amazon support")
                 print("for help if you own the domain you chose. This is an unfortunate side-effect of")
@@ -139,8 +149,9 @@ def prompt_create_website(args):
             bucket_name, sync_path, index=directory_index,
             error_doc=error_index)
         user_config["websites"][bucket_name] = website.to_config()
-        website.create()
-        print("Amazon S3 Bucket created!")
+        website.create(use_existing_bucket=use_existing_bucket)
+        if not use_existing_bucket:
+            print("Amazon S3 bucket created!")
         config.save_config(user_config)
         print("Website configuration saved!")
         print("Your Amazon website endpoint: http://{0}.s3-website-us-east-1."
@@ -155,20 +166,22 @@ def prompt_create_website(args):
         print("")
 
 def upload_website(args):
-    try:
-        user_config = config.load_config()
-    except IOError:
-        print("")
-        print("Can't find a configuration. You need to run: vaporfile create")
-        print("")
-        return
+    user_config = config.get_config()
     try:
         website = S3Website.from_config(user_config["websites"][args.WEBSITE])
     except KeyError:
         print("")
         print("Can't find a website configuration called {0}".format(args.WEBSITE))
-        print("Maybe you need to create it first?")
+        print("Maybe you need to create it first? Run: vaporfile create")
         return
+    try:
+        credentials.check_credentials(user_config)
+    except credentials.VaporfileCredentialException:
+        print("")
+        print("Can't find credentials. You need to run: vaporfile "
+              "credentials store")
+        print("")
+        return        
     website.synchronize(delete=not args.no_delete)
 
 def list_websites(args):
@@ -208,15 +221,19 @@ class S3Website(object):
         return self.get_connection().get_bucket(self.bucketname)
     def get_connection(self):
         return s3_util.get_connection()
-    def create(self):
+    def create(self, use_existing_bucket=False):
         """Create the bucket for the subdomain."""
         #Check if the bucket name already exists in our account,
         #boto doesn't tell us this.
         connection = self.get_connection()
-        if self.bucketname in s3_util.get_bucket_names(connection):
-            raise Exception("Bucket '{0}' already exists in your account.")
-        bucket = connection.create_bucket(self.bucketname)
-        logger.info("Created new bucket : {0}".format(self.bucketname))
+        if use_existing_bucket:
+            bucket = connection.get_bucket(self.bucketname)
+        else:
+            if self.bucketname in s3_util.get_bucket_names(connection):
+                raise Exception("Bucket '{0}' already exists in your account."\
+                                    .format(self.bucketname))
+            bucket = connection.create_bucket(self.bucketname)
+            logger.info("Created new bucket : {0}".format(self.bucketname))
         #A website should be publically readable:
         bucket.set_acl("public-read")
         #Turn on website functionality:

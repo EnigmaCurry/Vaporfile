@@ -42,7 +42,7 @@ Or, you can install the packaged version on PyPI (Not there yet):
 Uploading a website
 -------------------
 
-Once Vaporfile is installed, you can run it create a new website
+Once Vaporfile is installed, you can run it to create a new website
 configuration:
 
         vaporfile create
