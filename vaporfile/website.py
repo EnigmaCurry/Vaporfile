@@ -198,7 +198,7 @@ def list_websites(args):
         print("")
         return
     for name, website in user_config["websites"].items():
-        print(("   "+name).ljust(25)+"- "+website["localpath"])
+        print(("   "+name).ljust(35)+"- "+website["localpath"])
         
                 
 class S3Website(object):
