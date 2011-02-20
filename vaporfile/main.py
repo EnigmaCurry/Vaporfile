@@ -14,8 +14,13 @@ logger = logging.getLogger("vaporfile")
 def main():
     parser_template = argparse.ArgumentParser(add_help=False)
     parser_template.add_argument(
-        "-c", "--config", dest="config",
-        default=None, help="config file (defaults to ~/.vaporfile)")
+        "--version", action="version",
+        version="%(prog)s {0} -- http://github.com/EnigmaCurry/vaporfile"\
+            .format(__version__))
+    parser_template.add_argument(
+        "-c", "--config", metavar="PATH", dest="config",
+        default=None, help="Use alternative config file (defaults"
+        " to ~/.vaporfile)")
     parser_template.add_argument("-v", "--verbose", dest="verbose",
                                  default=False, action="store_true",
                                  help="Be verbose")
@@ -23,8 +28,6 @@ def main():
                                  default=False, action="store_true",
                                  help="Be extra verbose")
     parser = argparse.ArgumentParser(parents=[parser_template])
-    parser.version = "vaporfile -- {0} -- http://www.enigmacurry.com"\
-        .format(__version__)
     
     subparsers = parser.add_subparsers()
 
