@@ -112,7 +112,7 @@ def prompt_create_website(args):
                     break
         print("")
     clear_screen()
-    print(" Confirmation Options ".center(80,"+"))
+    print(" Configuration Options ".center(80,"+"))
     print("")
     if get_yes_no("Would you like to use index.html as your default index file? (Y/n)", default=True):
         directory_index = "index.html"
@@ -154,11 +154,12 @@ def prompt_create_website(args):
             print("Amazon S3 bucket created!")
         config.save_config(user_config)
         print("Website configuration saved!")
-        print("Your Amazon website endpoint: http://{0}.s3-website-us-east-1."
-              "amazonaws.com".format(bucket_name))
+        website_endpoint = website.get_bucket().get_website_endpoint()
+        s3_endpoint = website_endpoint.replace(bucket_name+".","")
+        print("Your Amazon website endpoint: {0}".format(website_endpoint))
         if using_own_domain:
             print("Your DNS service needs a CNAME record pointing {0} "
-                  "to\ns3-website-us-east-1.amazonaws.com".format(bucket_name))
+                  "to {1}".format(bucket_name, s3_endpoint))
             print("")
         print("To upload your website run this command:")
         print("")
@@ -184,6 +185,22 @@ def upload_website(args):
         return        
     website.synchronize(delete=not args.no_delete)
 
+def remove_website(args):
+    user_config = config.get_config()
+    try:
+        site = user_config["websites"][args.WEBSITE]
+    except KeyError:
+        print("")
+        print("Unknown website configuration : {0}".format(args.WEBSITE))
+        print("")
+    else:
+        del user_config["websites"][args.WEBSITE]
+        config.save_config(user_config)
+        print("")
+        print("Local website configuration removed : {0}".format(args.WEBSITE))
+        print("")
+        
+    
 def list_websites(args):
     try:
         user_config = config.load_config()

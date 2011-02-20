@@ -58,6 +58,13 @@ def main():
     p_upload.add_argument("--no-delete", action="store_true", help="Don't delete old files from S3")
     p_upload.set_defaults(func=website.upload_website)
 
+    ### Remove
+    p_remove = subparsers.add_parser(
+        "remove", help="Remove a website configuration locally",
+        parents=[parser_template])
+    p_remove.add_argument("WEBSITE", help="Name of configured website")
+    p_remove.set_defaults(func=website.remove_website)
+
     ### List
     p_list = subparsers.add_parser(
         "list", help="List all configured websites",
