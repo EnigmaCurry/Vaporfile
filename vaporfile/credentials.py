@@ -27,7 +27,7 @@ def prompt_save_credentials(args):
     print("")
     store_credentials(cred)
     clear_screen()
-    print("Credentials saved in ~/.vaporfile")
+    print("Credentials saved in {0}".format(config.__config_file__))
     print("File access restricted to your user account ({0}).".format(getpass.getuser()))
     print("")
 

@@ -4,7 +4,11 @@ import json
 
 from website import S3Website
 
-def load_config(path=os.path.join(os.path.expanduser("~"),".vaporfile")):
+__config_file__ = os.path.join(os.path.expanduser("~"),".vaporfile")
+
+def load_config(path=None):
+    if not path:
+        path = __config_file__
     with open(path) as f:
         config = json.loads(f.read())
         try:
@@ -13,7 +17,7 @@ def load_config(path=os.path.join(os.path.expanduser("~"),".vaporfile")):
             config["websites"] = {}
     return config
 
-def get_config(path=os.path.join(os.path.expanduser("~"),".vaporfile")):
+def get_config(path=None):
     """Get the config, load it if possible, create it if necessary"""
     try:
         c = load_config(path)
@@ -23,7 +27,9 @@ def get_config(path=os.path.join(os.path.expanduser("~"),".vaporfile")):
     return c
 
 def save_config(
-    config, path=os.path.join(os.path.expanduser("~"),".vaporfile")):
+    config, path=None):
+    if not path:
+        path = __config_file__
     #JSON is a better pickle:
     with open(path,"w") as f:
         f.write(json.dumps(config,sort_keys=True,indent=4))

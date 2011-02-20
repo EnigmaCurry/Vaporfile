@@ -4,6 +4,7 @@ import shlex
 import logging
 
 from . import __version__
+import config
 import credentials
 import website
 
@@ -12,6 +13,9 @@ logger = logging.getLogger("vaporfile")
 
 def main():
     parser_template = argparse.ArgumentParser(add_help=False)
+    parser_template.add_argument(
+        "-c", "--config", dest="config",
+        default=None, help="config file (defaults to ~/.vaporfile)")
     parser_template.add_argument("-v", "--verbose", dest="verbose",
                                  default=False, action="store_true",
                                  help="Be verbose")
@@ -63,6 +67,8 @@ def main():
         parser.exit(1)
     else:
         args = parser.parse_args()
+    if args.config:
+        config.__config_file__ = args.config
     if args.verbose:
         logger.setLevel(logging.INFO)
         logger.info("Setting verbose output mode")
