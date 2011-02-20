@@ -14,6 +14,8 @@ Requirements
 ------------
 * [Python 2.6](http://www.python.org/download/) or above.
 * An [Amazon S3 account](http://aws.amazon.com/s3/).
+* The DEV version of [boto](https://github.com/boto/boto) (until 2.0b5
+or greater is released).
 
 Install
 -------
