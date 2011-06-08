@@ -290,6 +290,7 @@ class S3Website(object):
                         #File has changed
                         logger.info("Uploading changed file: {0}".format(file_key))
                         s3_key.set_contents_from_filename(file_path)
+                        s3_key.set_acl("public-read")
         if delete:
             #Delete all files that don't exist locally
             for name, key in s3_paths.items():
