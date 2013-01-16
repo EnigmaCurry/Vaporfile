@@ -272,9 +272,8 @@ class S3Website(object):
                 file_key = os.path.relpath(file_path,self.localpath)
                 if os.sep == "\\":
                     #Windows paths need conversion
-                    local_files.add(file_key.replace("\\","/"))
-                else:
-                    local_files.add(file_key)
+                    file_key = file_key.replace("\\","/")
+                local_files.add(file_key)
                 try:
                     s3_key = s3_paths[file_key]
                 except KeyError:
