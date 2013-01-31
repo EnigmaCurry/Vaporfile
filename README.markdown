@@ -34,7 +34,7 @@ need to install the dev version:
 
 Now you can install the DEV version of Vaporfile:
 
-    git clone https://github.com/EnigmaCurry/vaporfile.git
+    git clone https://github.com/EnigmaCurry/Vaporfile.git
     sudo python vaporfile/setup.py develop
 
 Or, you can install the packaged version on PyPI (Not there yet):
