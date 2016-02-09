@@ -1,4 +1,4 @@
-from boto.s3.connection import S3Connection
+from boto.s3.connection import OrdinaryCallingFormat, S3Connection
 from boto.exception import S3ResponseError
 
 import config
@@ -11,7 +11,8 @@ def get_connection():
     global __conn
     if not __conn:
         __conn = S3Connection(c["credentials"]["access_key"],
-                              c["credentials"]["secret_key"])
+                              c["credentials"]["secret_key"],
+                              calling_format=OrdinaryCallingFormat())
     return __conn
 
 def get_bucket_names(conn):
